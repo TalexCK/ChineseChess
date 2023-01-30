@@ -7,3 +7,5 @@ ChineseChess 中国象棋AI版,可以与电脑对弈或双人对弈，目前正�
 
 依赖: log4j2(2.19.0)(没写好，可以不用，但要删除相关代码)  
 依赖: Java EE 6  
+
+Forked from pengjiu/ChineseChess  
