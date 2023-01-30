@@ -267,11 +267,13 @@ public class ChessBoardMain extends JFrame {
         //jmb.add(menu_net);
         //------------------------------------------------------
         JMenu menu_set = new JMenu("设置");
-        JCheckBoxMenuItem redCmp = new JCheckBoxMenuItem("电脑黑方",play!=REDPLAYSIGN);
-        JCheckBoxMenuItem blackCmp = new JCheckBoxMenuItem("电脑红方",play!=BLACKPLAYSIGN);
+        //JCheckBoxMenuItem redCmp = new JCheckBoxMenuItem("电脑红方",play!=REDPLAYSIGN);
+        JCheckBoxMenuItem blackCmp = new JCheckBoxMenuItem("电脑方切换",play!=BLACKPLAYSIGN);
+        JCheckBoxMenuItem doubles = new JCheckBoxMenuItem("双人对战",play!=BLACKPLAYSIGN&&play!=REDPLAYSIGN);
         ButtonGroup computer= new ButtonGroup();
-        computer.add(redCmp);
+        //computer.add(redCmp);
         computer.add(blackCmp);
+        computer.add(doubles);
 
         JCheckBoxMenuItem isSoundBox= new JCheckBoxMenuItem("音效",isSound);
 
@@ -284,16 +286,18 @@ public class ChessBoardMain extends JFrame {
 
         JCheckBoxMenuItem backstageThink=new JCheckBoxMenuItem("后台思考",isBackstageThink);
 
-        redCmp.addActionListener(menuItemAction);
+        //redCmp.addActionListener(menuItemAction);
         blackCmp.addActionListener(menuItemAction);
         //hashSize2M.addActionListener(menuItemAction);
         //hashSize32M.addActionListener(menuItemAction);
         //hashSize64M.addActionListener(menuItemAction);
         backstageThink.addActionListener(menuItemAction);
         isSoundBox.addActionListener(menuItemAction);
+        doubles.addActionListener(menuItemAction);
 
         menu_set.add(blackCmp);
-        menu_set.add(redCmp);
+        //menu_set.add(redCmp);
+        menu_set.add(doubles);
         //menu_set.add(hashSize2M);
         //menu_set.add(hashSize32M);
         //menu_set.add(hashSize64M);
@@ -613,7 +617,7 @@ public class ChessBoardMain extends JFrame {
                 computerLevel=ComputerLevel.master;
             }else if("无敌".equals(actionCommand)){
                 computerLevel=ComputerLevel.invincible;
-            }else if("电脑黑方".equals(actionCommand)){
+            }else if("电脑方切换".equals(actionCommand)){
                 android[BLACKPLAYSIGN]=!android[BLACKPLAYSIGN];
                 if(android[BLACKPLAYSIGN] && (BLACKPLAYSIGN==play || turn_num<=0)){
                     if(turn_num<=0){
@@ -630,22 +634,11 @@ public class ChessBoardMain extends JFrame {
                     }
                     computeThinkStart();
                 }
-            }else if("电脑红方".equals(actionCommand)){
-                android[REDPLAYSIGN]=!android[REDPLAYSIGN];
-                if(android[REDPLAYSIGN] && (REDPLAYSIGN==play || turn_num<=0) ){
-                    if(turn_num<=0){
-                        play=REDPLAYSIGN;
-                        moveHistory.play=1-REDPLAYSIGN;
-                    }
-                    computeThinkStart();
-                }
+            }else if("双人对战".equals(actionCommand)){
                 android[BLACKPLAYSIGN]=!android[BLACKPLAYSIGN];
-                if(android[BLACKPLAYSIGN] && (BLACKPLAYSIGN==play || turn_num<=0)){
-                    if(turn_num<=0){
-                        play=BLACKPLAYSIGN;
-                        moveHistory.play=1-BLACKPLAYSIGN;
-                    }
-                    computeThinkStart();
+                if(turn_num<=0){
+                    play=REDPLAYSIGN;
+                    moveHistory.play=1-REDPLAYSIGN;
                 }
             }else if("后台思考".equals(actionCommand)){
                 isBackstageThink=!isBackstageThink;
@@ -661,31 +654,6 @@ public class ChessBoardMain extends JFrame {
             }
         }
 
-    }
-    private JTabbedPane view_pane;
-
-    public static String localip() {
-        try {
-            Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
-            InetAddress ip = null;
-            while (allNetInterfaces.hasMoreElements()) {
-                NetworkInterface netInterface = (NetworkInterface) allNetInterfaces.nextElement();
-                if (netInterface.isLoopback() || netInterface.isVirtual() || !netInterface.isUp()) {
-                    continue;
-                } else {
-                    Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
-                    while (addresses.hasMoreElements()) {
-                        ip = addresses.nextElement();
-                        if (ip != null && ip instanceof Inet4Address) {
-                            return ip.getHostAddress();
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-
-        }
-        return "";
     }
 
     private void opponentMove(){
@@ -802,9 +770,6 @@ public class ChessBoardMain extends JFrame {
         //hashSize64M.setEnabled(false);
     }
 
-    /*
-     * ?????α?????
-     */
     public  String readSaved(){
         String fen = null;
         FileInputStream fileInput = null;
