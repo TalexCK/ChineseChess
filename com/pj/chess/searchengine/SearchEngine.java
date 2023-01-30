@@ -13,15 +13,12 @@ import static com.pj.chess.ChessConstant.drawScore;
 import static com.pj.chess.ChessConstant.LONGCHECKSCORE;
 import static com.pj.chess.ChessConstant.maxScore;
  
-import static com.pj.chess.ChessConstant.chessPlay; 
+import static com.pj.chess.ChessConstant.chessPlay;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pj.chess.BitBoard;
-import com.pj.chess.ChessConstant;
-import com.pj.chess.NodeLink;
-import com.pj.chess.Tools;
+import com.pj.chess.*;
 import com.pj.chess.chessmove.ChessMovePlay;
 import com.pj.chess.chessmove.ChessQuiescMove;
 import com.pj.chess.chessmove.MoveNode;
@@ -32,6 +29,8 @@ import com.pj.chess.evaluate.EvaluateComputeMiddle;
 import com.pj.chess.evaluate.EvaluateComputeMiddleGame;
 import com.pj.chess.history.CHistoryHeuritic;
 import com.pj.chess.zobrist.TranspositionTable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class SearchEngine implements Runnable{
 	public volatile boolean isStop=false;
@@ -147,6 +146,7 @@ public abstract class SearchEngine implements Runnable{
 		int s[]=this.getChessBaseScore(); 
 		if((s[1-nodeLink.play]-s[nodeLink.play])!=score){
 			System.err.println("分数->"+(s[1-nodeLink.play]-s[nodeLink.play]));
+			LOG.error("分数->"+(s[1-nodeLink.play]-s[nodeLink.play]));
 		}
 		for(int i=unMovenode.size()-1;i>=0;i--){
 			chessQuiescMove.unMoveOperate(unMovenode.get(i));
@@ -154,6 +154,7 @@ public abstract class SearchEngine implements Runnable{
 		return score;
 	}
 	//交换走棋方
+	private static final Logger LOG = LogManager.getLogger(SearchEngine.class);
 	public int swapPlay(int currplay){
 		return 1-currplay;
 	}

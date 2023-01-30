@@ -2,12 +2,8 @@ package com.pj.chess.chessmove;
 
 import static com.pj.chess.ChessConstant.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.pj.chess.BitBoard;
 import com.pj.chess.ChessConstant;
-import com.pj.chess.Tools;
 import com.pj.chess.chessparam.ChessParam;
 import com.pj.chess.evaluate.EvaluateCompute;
 import com.pj.chess.movelist.MoveNodeList;
@@ -447,7 +443,7 @@ public abstract class ChessMoveAbs {
 	 *@date:Aug 31, 2011 11:01:45 AM
 	 * 功能：生成所有吃子着法 note：(但所吃子的价值低于一定值时将不算为吃子着法中)
 	 *@param play
-	 *@param dumpMoveList
+	 *@param //dumpMoveList
 	*/
 	public void genEatMoveList(int play){
 		int begin=chessPlay[play];
@@ -466,7 +462,7 @@ public abstract class ChessMoveAbs {
 	 *@date:Aug 31, 2011 11:01:19 AM
 	 * 功能：生成不吃子着法列表
 	 *@param play 玩家
-	 *@param dumpMoveList  
+	 *@param //dumpMoveList
 	*/
 	public void genNopMoveList(int play){ 
 		int begin=chessPlay[play];

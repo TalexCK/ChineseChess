@@ -2,7 +2,7 @@ package com.pj.chess;
 
  
 
-import com.pj.chess.chessparam.ChessParam; 
+import com.pj.chess.chessparam.ChessParam;
 
 public class ChessConstant {
 	public static final int KING=7;    //Íõ

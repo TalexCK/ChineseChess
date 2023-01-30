@@ -5,15 +5,24 @@ import static com.pj.chess.ChessConstant.ChessZobristList64;
 import static com.pj.chess.ChessConstant.boardCol;
 import static com.pj.chess.ChessConstant.boardRow;
 import static com.pj.chess.ChessConstant.chessRoles;
+import static com.pj.chess.LogWindow.addlog;
+import static com.pj.chess.LogWindow.jtextArea;
+import static com.pj.chess.RecordWindow.addrlog;
+import static com.pj.chess.RecordWindow.jtextArea2;
+import static com.sun.webkit.perf.PerfLogger.logAll;
 
 import java.io.Serializable;
 
 import com.pj.chess.chessmove.MoveNode;
-	/**棋子着法链表
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+/**棋子着法链表
 	 * @author pengjiu
 	 */
 	public class NodeLink implements Serializable{
 		private NodeLink lastLink;
+		private static final Logger LOG = LogManager.getLogger(NodeLink.class);
 		private NodeLink nextLink;
 		public int depth=0;
 		private MoveNode moveNode;
@@ -93,12 +102,18 @@ import com.pj.chess.chessmove.MoveNode;
 //			}
 			NodeLink nextLink = firstLink;
 			sb.append("==========================================================\n");
+			LOG.info("==========================================================\n");
+			addrlog("==========================================================");
 			while(nextLink!=null){
 					MoveNode movenode=nextLink.getMoveNode();
-					sb.append(" 第->").append(nextLink.depth).append("步 ").append(movenode).append(" "+(nextLink.isQuiesc?"静态搜索":"正常搜索")+"\t"+(nextLink.chk?"将军":"无将军")+"\n");
+					sb.append(" 第->").append(nextLink.depth).append("步 ").append(movenode).append("\t"+(nextLink.isQuiesc?"静态搜索":"正常搜索")+"\t"+(nextLink.chk?"将军":"无将军")+"\n");
+					LOG.info(" 第->" + nextLink.depth+"步 " + " " +(nextLink.isQuiesc?"静态搜索":"正常搜索")+(nextLink.chk?"将军":"无将军")+"\n");
+					addrlog(" 第->" + nextLink.depth+"步 " + movenode + "" +(nextLink.isQuiesc?"静态搜索":"正常搜索")+"\t"+(nextLink.chk?"将军":"无将军")+"");
 					nextLink=nextLink.getNextLink();
 			}
 			sb.append("==========================================================\n");
+			LOG.info("==========================================================\n");
+			addrlog("==========================================================");
 			return sb.toString();
 		}
 	}

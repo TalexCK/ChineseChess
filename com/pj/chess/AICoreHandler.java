@@ -1,5 +1,7 @@
 package com.pj.chess;
 import static com.pj.chess.ChessConstant.*;
+import static com.pj.chess.LogWindow.addlog;
+import static com.pj.chess.RecordWindow.addrlog;
 
 
 import java.util.ArrayList;
@@ -20,6 +22,9 @@ import com.pj.chess.history.CHistoryHeuritic;
 import com.pj.chess.searchengine.PrincipalVariation;
 import com.pj.chess.searchengine.SearchEngine;
 import com.pj.chess.zobrist.TranspositionTable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * @author pengjiu
  * 调度类，选择合适 的AI引擎,评估函数
@@ -39,6 +44,7 @@ public class AICoreHandler {
 	public void run(){
 		run(false);
 	}
+	private static Logger LOG = LogManager.getLogger(AICoreHandler.class);
 	public void run(boolean isGuess){
 		TranspositionTable.setDefaultHashSize();
 		long beginTime = System.currentTimeMillis();
@@ -60,6 +66,8 @@ public class AICoreHandler {
 //		}
 		long endTime = System.currentTimeMillis();
 		System.out.println(" 耗时："+(endTime-beginTime)+"毫秒\t 分数:"+mtdfV+"\t叶子节点："+seEngine.count);
+		LOG.info(" 耗时："+(endTime-beginTime)+"毫秒\t 分数:"+mtdfV+"\t叶子节点："+seEngine.count);
+		addrlog(" 耗时："+(endTime-beginTime)+"毫秒\t 分数:"+mtdfV+"\t叶子节点："+seEngine.count);
 		if(timerMonitoring!=null)timerMonitoring.cancel();
 		 
 	}
