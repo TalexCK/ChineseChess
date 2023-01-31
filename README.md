@@ -3,7 +3,11 @@ ChineseChess 中国象棋AI版,可以与电脑对弈或双人对弈，目前正�
 增加可选导入功能  
 增加种子导入和种子导出功能  
 增加将军提示  
-将电脑红方与电脑黑方统一为切换电脑方，增加双人对战
+将电脑红方与电脑黑方统一为切换电脑方，增加双人对战  
+下载源代码自行构建/运行(启动类com.pj.chess.ChessBoardMain) 或下载Release: https://github.com/TalexCalexK0133/ChineseChess/releases/latest   
+**运行请务必使用命令行(windows)/终端(macos)，否则无法使用完整功能**//java -jar ChineseChess.jar  
+**请不要使用该软件进行作弊行为，否则后果自负**  
+
 
 依赖: log4j2(2.19.0)(没写好，可以不用，但要删除相关代码)  
 依赖: Java EE 6  
@@ -31,3 +35,5 @@ Forked from pengjiu/ChineseChess
 10.以下行为将会被AI运算输出:  
 (1)AI走子运算  
 (2)后台思考运算  
+
+使用本程序或源码造成的任何后果由使用者承担
