@@ -6,7 +6,10 @@
 增加将军提示  
 将电脑红方与电脑黑方统一为切换电脑方，增加双人对战  
 下载源代码自行构建/运行(启动类com.pj.chess.ChessBoardMain) 或下载Release: https://github.com/TalexCalexK0133/ChineseChess/releases/latest   
-**运行请务必使用命令行(windows)/终端(macos)，否则无法使用完整功能**//java -jar ChineseChess.jar  
+**运行请务必使用命令行(windows)/终端(macos)，否则无法使用完整功能**
+
+java -jar ChineseChess.jar  
+
 **请不要使用该软件进行作弊行为，否则后果自负**  
 **当前构建版本中种子导入后默认红方先行，可能会导致严重的棋局上的bug，建议暂时不要使用此功能或者只在人(执红)机(执黑)对弈时使用，切记双人对战时等黑方走完红方未行时导出**
 
