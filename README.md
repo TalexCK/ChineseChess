@@ -1,3 +1,5 @@
+### 中国象棋AI
+	/github/v/release/:user/:repo?display_name=tag&sort=semver   /github/v/tag/:user/:repo  
 ChineseChess 中国象棋AI版,可以与电脑对弈或双人对弈，目前正在开发联网。  
 增加Log输出功能  
 增加可选导入功能  
