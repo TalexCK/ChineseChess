@@ -350,6 +350,6 @@ public class PrincipalVariation extends SearchEngine {
 		return AllmoveNode.get(index);
 	}
 	public void run() {
-		
-	}		
+
+    }
 }

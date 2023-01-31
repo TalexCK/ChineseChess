@@ -1,12 +1,7 @@
 package com.pj.chess;
 import static com.pj.chess.ChessConstant.*;
-import static com.pj.chess.LogWindow.addlog;
 import static com.pj.chess.RecordWindow.addrlog;
 
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -15,8 +10,6 @@ import com.pj.chess.chessmove.MoveNode;
 import com.pj.chess.chessparam.ChessParam;
 import com.pj.chess.evaluate.EvaluateCompute;
 import com.pj.chess.evaluate.EvaluateComputeEndGame;
-import com.pj.chess.evaluate.EvaluateComputeMiddle;
-import com.pj.chess.evaluate.EvaluateComputeOther;
 import com.pj.chess.evaluate.EvaluateComputeMiddleGame;
 import com.pj.chess.history.CHistoryHeuritic;
 import com.pj.chess.searchengine.PrincipalVariation;
@@ -178,7 +171,7 @@ public class AICoreHandler {
 	public static void main(String[] args) {
 		TimerTask myTask = new TimerTask(){
 			public void run(){
-				 
+
 			}
 		}; 
 		Timer timer=new Timer();

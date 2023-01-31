@@ -1,15 +1,6 @@
 package com.pj.chess;
 
-import static com.pj.chess.ChessBoardMain.chessName;
-import static com.pj.chess.ChessConstant.ChessZobristList64;
-import static com.pj.chess.ChessConstant.boardCol;
-import static com.pj.chess.ChessConstant.boardRow;
-import static com.pj.chess.ChessConstant.chessRoles;
-import static com.pj.chess.LogWindow.addlog;
-import static com.pj.chess.LogWindow.jtextArea;
 import static com.pj.chess.RecordWindow.addrlog;
-import static com.pj.chess.RecordWindow.jtextArea2;
-import static com.sun.webkit.perf.PerfLogger.logAll;
 
 import java.io.Serializable;
 

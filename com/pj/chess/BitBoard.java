@@ -1,7 +1,4 @@
 package com.pj.chess;
- 
- 
- 
 
 public class BitBoard {
 	private int Low, Mid1,Mid2, Hi;

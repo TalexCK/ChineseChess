@@ -1,8 +1,12 @@
 package com.pj.chess;
 import static com.pj.chess.ChessConstant.*;
+import static com.pj.chess.Config.exportconfigevent;
+import static com.pj.chess.Config.readconfig;
 import static com.pj.chess.LogWindow.*;
+import static com.pj.chess.Manual.exportmanualevent;
 import static com.pj.chess.RecordWindow.addrlog;
 import static com.pj.chess.RecordWindow.jtextArea2;
+import static com.pj.chess.Manual.importmanualevent;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
@@ -10,12 +14,8 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -27,26 +27,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.URL;
-import java.util.*;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
 
 import com.pj.chess.chessmove.ChessMovePlay;
 import com.pj.chess.chessmove.MoveNode;
 import com.pj.chess.chessparam.ChessParam;
-import com.pj.chess.evaluate.EvaluateCompute;
 import com.pj.chess.evaluate.EvaluateComputeMiddleGame;
 import com.pj.chess.zobrist.TranspositionTable;
 
@@ -63,14 +56,14 @@ public class ChessBoardMain extends JFrame {
             "BK","BR","BR","BN","BN","BC","BC","BB","BB","BA","BA","BP","BP","BP","BP","BP",
             "RK","RR","RR","RN","RN","RC","RC","RB","RB","RA","RA","RP","RP","RP","RP","RP",
     };
-    int lastTimeCheckedSite=-1; //???????????λ??
+    int lastTimeCheckedSite=-1;
     private ButtonActionListener my = new ButtonActionListener();
     JLabel[] buttons=new JLabel[BOARDSIZE90];
     int play=1;
     volatile boolean[] android=new boolean[]{false,false};
     int begin=-1;
     int end=0;
-    private static ComputerLevel computerLevel=ComputerLevel.greenHand; //???
+    private static ComputerLevel computerLevel=ComputerLevel.greenHand;
     boolean isBackstageThink=false;
     boolean computeFig=false;
     TranspositionTable  transTable;
@@ -79,7 +72,7 @@ public class ChessBoardMain extends JFrame {
     AICoreHandler backstageAIThink=new AICoreHandler();
     //	public static List<MoveNode> backMove=new ArrayList<MoveNode>();
     NodeLink moveHistory;
-    int turn_num=0;//?????
+    int turn_num=0;
     ChessParam chessParamCont;
     private static boolean isSound=false;
     public String startFen="c6c5  rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR b - - 0 1";
@@ -103,7 +96,6 @@ public class ChessBoardMain extends JFrame {
             }
         }
 
-        //???????(????????ú???????????)
         transTable=new TranspositionTable() ;
         if(moveHistory==null){
             moveHistory=new NodeLink(1-play,transTable.boardZobrist32,transTable.boardZobrist64);
@@ -170,6 +162,8 @@ public class ChessBoardMain extends JFrame {
         }
         this.add(jpanelContent,BorderLayout.CENTER);
     }
+    public static Button nextstep = new Button("下一步");
+    public static Button laststep = new Button("上一步");
     public ChessBoardMain() {
 
         super("中国象棋");
@@ -179,20 +173,27 @@ public class ChessBoardMain extends JFrame {
 
 
         JPanel constrol=new JPanel();
-        constrol.setLayout(new GridLayout(1, 2));
+        constrol.setLayout(new GridLayout(1, 1));
         Button newgame = new Button("新游戏");
         newgame.addActionListener(my);
         Button button = new Button("悔棋");
         button.addActionListener(my);
         Button computerMove = new Button("AI立刻走棋");
         computerMove.addActionListener(my);
+
+        nextstep.addActionListener(my);
+
+        laststep.addActionListener(my);
         constrol.add(newgame);
         constrol.add(button);
         constrol.add(computerMove);
+        constrol.add(laststep);
+        constrol.add(nextstep);
+        manualend();
         this.add(constrol,BorderLayout.SOUTH);
 
         this.addWindowListener(my);
-        //?????????
+        //初始化
         initHandler();
         this.setJMenuBar(setJMenuBar());
 
@@ -205,17 +206,28 @@ public class ChessBoardMain extends JFrame {
     //JRadioButtonMenuItem hashSize2M = new JRadioButtonMenuItem("HASH??С",true);
     //JRadioButtonMenuItem hashSize32M = new JRadioButtonMenuItem("HASH????",false);
     //JRadioButtonMenuItem hashSize64M = new JRadioButtonMenuItem("HASH???",false);
+    public static void manualstart(){
+        nextstep.setEnabled(true);
+        laststep.setEnabled(true);
+    }
+    public static void manualend(){
+        nextstep.setEnabled(false);
+        laststep.setEnabled(false);
+    }
     private JMenuBar setJMenuBar(){
         JMenuBar jmb = new JMenuBar();
         JMenu menu_file = new JMenu("游戏");
         JMenu menu_ai = new JMenu("AI等级");
         JMenu menu_net = new JMenu("联网");
+        JMenu menu_manual = new JMenu("棋谱");
         JMenuItem create = new JMenuItem("新建");
         JMenuItem save= new JMenuItem("保存");
         JMenuItem imports= new JMenuItem("导入");
         JMenuItem connect= new JMenuItem("连接");
         JMenuItem seedimport= new JMenuItem("种子导入");
         JMenuItem seedexport= new JMenuItem("种子导出");
+        JMenuItem importmanual = new JMenuItem("导入棋谱");
+        JMenuItem exportmanual = new JMenuItem("导出棋谱");
         JRadioButtonMenuItem mi_6 = new JRadioButtonMenuItem("菜鸟",true);
         JRadioButtonMenuItem mi_7 = new JRadioButtonMenuItem("入门",false);
         JRadioButtonMenuItem mi_8 = new JRadioButtonMenuItem("业余",false);
@@ -242,6 +254,8 @@ public class ChessBoardMain extends JFrame {
         connect.addActionListener(menuItemAction);
         seedimport.addActionListener(menuItemAction);
         seedexport.addActionListener(menuItemAction);
+        importmanual.addActionListener(menuItemAction);
+        exportmanual.addActionListener(menuItemAction);
 
         create.setMnemonic(10);
         mi_6.setMnemonic(2);
@@ -252,6 +266,8 @@ public class ChessBoardMain extends JFrame {
         menu_file.setMnemonic('0');
         menu_file.add(create);
         menu_file.add(imports);
+        menu_manual.add(importmanual);
+        menu_manual.add(exportmanual);
         menu_ai.add(mi_6);
         menu_ai.add(mi_7);
         menu_ai.add(mi_8);
@@ -264,7 +280,9 @@ public class ChessBoardMain extends JFrame {
         menu_net.add(connect);
         jmb.add(menu_file);
         jmb.add(menu_ai);
-        //jmb.add(menu_net);
+        jmb.add(menu_manual);
+        jmb.add(menu_net);
+
         //------------------------------------------------------
         JMenu menu_set = new JMenu("设置");
         //JCheckBoxMenuItem redCmp = new JCheckBoxMenuItem("电脑红方",play!=REDPLAYSIGN);
@@ -513,9 +531,6 @@ public class ChessBoardMain extends JFrame {
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             dispose();
             new ChessBoardMain();
-        } else{
-            dispose();
-            System.exit(0);
         }
     }
 
@@ -649,8 +664,16 @@ public class ChessBoardMain extends JFrame {
                 LOG.info("Player: "+"切换音效");
                 addlog("Player: "+"切换音效");
             }else if("连接".equals(actionCommand)){
-                dispose();
-                new ChessBoardMain();
+                JOptionPane.showMessageDialog(null, "暂未开放","提示",JOptionPane.PLAIN_MESSAGE);
+                //String nickname = JOptionPane.showInputDialog(null, "请输入昵称\n","提示",JOptionPane.PLAIN_MESSAGE);
+                //String yoursecret = JOptionPane.showInputDialog(null, "请输入密码\n","提示",JOptionPane.PLAIN_MESSAGE);
+                //new ClientDia(com.pj.chess.client.ClientDia.socket, nickname, yoursecret);
+            }else if("导入棋谱".equals(actionCommand)){
+                String filename = JOptionPane.showInputDialog(null,"请输入棋谱文件名(无需后缀):\n","棋谱",JOptionPane.PLAIN_MESSAGE);
+                importmanualevent(filename);
+            }else if("导出棋谱".equals(actionCommand)){
+                String filename = JOptionPane.showInputDialog(null,"请命名棋谱:\n","棋谱",JOptionPane.PLAIN_MESSAGE);
+                exportmanualevent(filename);
             }
         }
 
@@ -820,6 +843,32 @@ public class ChessBoardMain extends JFrame {
         return fen;
     }
     public static void main(String args[]) {
+        if(!Objects.equals(readconfig(), "true")){
+            if(JOptionPane.showConfirmDialog(null,"欢迎使用中国象棋Java程序!\n本次更新如下:\n1.增加AI运算与后台思考的输出界面\n" +
+                    "2.增加报错输出界面与日志输出界面\n" +
+                    "3.取消HASH表的选项\n" +
+                    "4.由\"切换电脑方\"选项替换\"电脑红方\"选项、\"电脑黑方\"选项\n" +
+                    "5.增加\"双人对战\"选项\n" +
+                    "6.导入功能从打开弹出对话框改到\"游戏\"菜单内选项\n" +
+                    "7.增加\"种子\"概念，增加\"种子导入\"\"种子导出\"功能，可以由一条文本导入和导出对局\n" +
+                    "8.悔棋会多悔棋一步，在与电脑对战时方便很多\n" +
+                    "9.以下行为将会被日志记录:\n" +
+                    "(1)打开软件\n" +
+                    "(2)悔棋\n" +
+                    "(3)导出种子\n" +
+                    "(4)导入种子\n" +
+                    "(5)游戏结束\n" +
+                    "(6)后台思考的切换\n" +
+                    "(7)音效的切换\n" +
+                    "(8)程序错误\n" +
+                    "10.以下行为将会被AI运算输出:\n" +
+                    "(1)AI走子运算\n" +
+                    "(2)后台思考运算\n\n"+"是否同意(使用本程序造成的后果由使用者承担)?","欢迎",JOptionPane.YES_NO_OPTION)== JOptionPane.NO_OPTION){
+                System.exit(0);
+            }
+            Config.configinfo = "true";
+            exportconfigevent();
+        }
         jtextArea.setText("");
         jtextArea2.setText("");
         com.pj.chess.LogWindow.logwindow();

@@ -3,29 +3,11 @@ package com.pj.chess;
 import static com.pj.chess.ChessConstant.*;
 import static com.pj.chess.Tools.*;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Random;
-
-import com.pj.chess.chessmove.ChessMovePlay;
-import com.pj.chess.chessmove.ChessQuiescMove;
-import com.pj.chess.chessmove.MoveNode;
 import com.pj.chess.chessparam.ChessParam;
-import com.pj.chess.evaluate.EvaluateCompute;
-import com.pj.chess.evaluate.EvaluateComputeMiddle;
 import com.pj.chess.zobrist.TranspositionTable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static com.pj.chess.chessmove.ChessQuiescMove.*;
 /**
  * @author pengjiu
  * 棋子棋盘初始化操作

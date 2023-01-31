@@ -2,13 +2,6 @@ package com.pj.chess;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 public class LogWindow {
     public LogWindow() {
@@ -45,7 +38,6 @@ public class LogWindow {
         JFrame jframe=new JFrame("ÈÕÖ¾¼ÇÂ¼");
         jframe.setBounds(100,100,600,1200);
         jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //JTextArea jtextArea=new JTextArea();
         jtextArea.setEditable(false);
         DefaultCaret caret=(DefaultCaret)jtextArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
