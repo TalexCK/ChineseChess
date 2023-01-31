@@ -14,7 +14,7 @@
 依赖: log4j2(2.19.0)(没写好，可以不用，但要删除相关代码)  
 依赖: Java EE 6  
 
-## Forked from pengjiu/ChineseChess  
+## Forked from pengjiu/ChineseChess  https://github.com/pengjiu/ChineseChess  
 
 ## 增加与修改:  
 1.增加AI运算与后台思考的输出界面  
