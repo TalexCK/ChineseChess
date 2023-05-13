@@ -58,7 +58,7 @@ public class ChessBoardMain extends JFrame {
     };
     int lastTimeCheckedSite=-1;
     private ButtonActionListener my = new ButtonActionListener();
-    JLabel[] buttons=new JLabel[BOARDSIZE90];
+    static JLabel[] buttons=new JLabel[BOARDSIZE90];
     int play=1;
     volatile boolean[] android=new boolean[]{false,false};
     int begin=-1;
@@ -66,14 +66,14 @@ public class ChessBoardMain extends JFrame {
     private static ComputerLevel computerLevel=ComputerLevel.greenHand;
     boolean isBackstageThink=false;
     boolean computeFig=false;
-    TranspositionTable  transTable;
+    static TranspositionTable  transTable;
     ChessMovePlay cmp=null;
     AICoreHandler _AIThink=new AICoreHandler();
     AICoreHandler backstageAIThink=new AICoreHandler();
     //	public static List<MoveNode> backMove=new ArrayList<MoveNode>();
     NodeLink moveHistory;
     int turn_num=0;
-    ChessParam chessParamCont;
+    static ChessParam chessParamCont;
     private static boolean isSound=false;
     public String startFen="c6c5  rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR b - - 0 1";
     public void initHandler(){
@@ -105,6 +105,7 @@ public class ChessBoardMain extends JFrame {
         cmp=new ChessMovePlay(chessParamCont,transTable,new EvaluateComputeMiddleGame(chessParamCont));
         LOG.info("局面种子: "+startFen);
         addlog("局面种子: "+startFen);
+        Tools.getseed(chessParamCont.board,moveHistory);
 
     }
     JPanel jpanelContent;
@@ -228,6 +229,8 @@ public class ChessBoardMain extends JFrame {
         JMenuItem seedexport= new JMenuItem("种子导出");
         JMenuItem importmanual = new JMenuItem("导入棋谱");
         JMenuItem exportmanual = new JMenuItem("导出棋谱");
+        JMenuItem logwindow = new JMenuItem("打开日志记录窗口");
+        JMenuItem recordwindow = new JMenuItem("打开AI运算输出窗口");
         JRadioButtonMenuItem mi_6 = new JRadioButtonMenuItem("菜鸟",true);
         JRadioButtonMenuItem mi_7 = new JRadioButtonMenuItem("入门",false);
         JRadioButtonMenuItem mi_8 = new JRadioButtonMenuItem("业余",false);
@@ -256,6 +259,8 @@ public class ChessBoardMain extends JFrame {
         seedexport.addActionListener(menuItemAction);
         importmanual.addActionListener(menuItemAction);
         exportmanual.addActionListener(menuItemAction);
+        logwindow.addActionListener(menuItemAction);
+        recordwindow.addActionListener(menuItemAction);
 
         create.setMnemonic(10);
         mi_6.setMnemonic(2);
@@ -278,6 +283,8 @@ public class ChessBoardMain extends JFrame {
         menu_file.add(seedexport);
         menu_file.add(save);
         menu_net.add(connect);
+        menu_file.add(logwindow);
+        menu_file.add(recordwindow);
         jmb.add(menu_file);
         jmb.add(menu_ai);
         jmb.add(menu_manual);
@@ -324,7 +331,7 @@ public class ChessBoardMain extends JFrame {
         jmb.add(menu_set);
         return jmb;
     }
-    public void setBoardIconUnchecked(int site,int chess){
+    public static void setBoardIconUnchecked(int site, int chess){
 //		site=boardMap[site];
 //		initBoardRelation(site,chess);
         if(chess==NOTHING){
@@ -339,7 +346,7 @@ public class ChessBoardMain extends JFrame {
     public void setCheckedLOSS(int play){
         buttons[chessParamCont.allChess[chessPlay[play]]].setIcon(getImageIcon(chessIcon[chessPlay[play]]+"M"));
     }
-    public void clearBoardIcon(){
+    public static void clearBoardIcon(){
         for(int i=0;i<buttons.length;i++){
             buttons[i].setIcon(null);
         }
@@ -389,6 +396,12 @@ public class ChessBoardMain extends JFrame {
             }else if(sour.getLabel().equals("新游戏")){
                 dispose();
                 new ChessBoardMain();
+            }else if(sour.getLabel().equals("下一步")){
+                manualtime++;
+                manualloadatime(manualtime);
+            }else if(sour.getLabel().equals("上一步")){
+                manualtime=manualtime-1;
+                manualloadatime(manualtime);
             }
 
 
@@ -533,10 +546,34 @@ public class ChessBoardMain extends JFrame {
             new ChessBoardMain();
         }
     }
+    public static Integer manualtime=0;
+    public static void manualload(){
+        manualstart();
+        manualloadatime(manualtime);
+    }
 
-    private ImageIcon getImageIcon(String chessName){
+    public static void manualloadatime(Integer manualtimes){
+        String manualFen = (String) Manual.manuallistread.get(manualtimes);
+        String[] fenArray = Tools.fenToFENArray(manualFen);
+
+        int[] boardTemp = Tools.parseFEN(fenArray[1]);
+        //??????????????
+        chessParamCont=ChessInitialize.getGlobalChessParam(boardTemp);
+        //??????н?????
+        clearBoardIcon();
+        //???????????
+        for(int i=0;i<boardTemp.length;i++){
+            if(boardTemp[i]>0){
+                ChessBoardMain.setBoardIconUnchecked(i,boardTemp[i]);
+            }
+        }
+
+        transTable=new TranspositionTable() ;
+    }
+
+    private static ImageIcon getImageIcon(String chessName){
         String path="/images/"+chessName+".GIF";
-        ImageIcon  imageIcon=new  ImageIcon(getClass().getResource(path));
+        ImageIcon  imageIcon=new  ImageIcon(ChessBoardMain.class.getResource(path));
         return imageIcon;
     }
 
@@ -674,6 +711,10 @@ public class ChessBoardMain extends JFrame {
             }else if("导出棋谱".equals(actionCommand)){
                 String filename = JOptionPane.showInputDialog(null,"请命名棋谱:\n","棋谱",JOptionPane.PLAIN_MESSAGE);
                 exportmanualevent(filename);
+            }else if("打开日志记录窗口".equals(actionCommand)){
+                com.pj.chess.LogWindow.logwindow();
+            }else if("打开AI运算输出窗口".equals(actionCommand)){
+                com.pj.chess.RecordWindow.recordwindow();
             }
         }
 
@@ -686,6 +727,7 @@ public class ChessBoardMain extends JFrame {
             turn_num++;
             play=1-play; //???????
             //????????????
+            Tools.getseed(chessParamCont.board,moveHistory);
             if(android[play]){
                 computeThinkStart();
             }
@@ -871,8 +913,6 @@ public class ChessBoardMain extends JFrame {
         }
         jtextArea.setText("");
         jtextArea2.setText("");
-        com.pj.chess.LogWindow.logwindow();
-        com.pj.chess.RecordWindow.recordwindow();
         new ChessBoardMain();
     }
     public void launchSound(int type){

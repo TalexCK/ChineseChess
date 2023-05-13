@@ -364,6 +364,42 @@ public class Tools {
 		System.out.println("===========各角色棋子组合一起===========");
 		System.out.println(bitBoard);
 	}
+	public static void getseed(int[] board,NodeLink backMove){
+
+
+		String[] sFen=new String[]{"","P","A","B","C","N","R","K","p","a","b","c","n","r","k"};
+
+
+//		String s="c6c5  rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR b - - 0 1";
+		int t=0;
+		StringBuilder sb=null;
+		for (int i = 0; i < board.length; i++) {
+			int row = boardRow[i];
+			int col = boardCol[i];
+			if (col == 0) {
+				if (sb == null) {
+					sb = new StringBuilder("0000 ");
+				} else {
+					if (t != 0) {
+						sb.append(t);
+						t = 0;
+					}
+					sb.append("/");
+				}
+			}
+			if (board[i] != ChessConstant.NOTHING) {
+				if (t != 0) {
+					sb.append(t);
+				}
+				int role = chessRoles[board[i]];
+				sb.append(sFen[role]);
+				t = 0;
+			} else {
+				t++;
+			}
+		}
+		Manual.manuallist.add(sb);
+	}
 	
 	
 }
