@@ -1,11 +1,12 @@
 package com.pj.chess;
 import static com.pj.chess.ChessConstant.*;
-import static com.pj.chess.Config.*;
 import static com.pj.chess.LogWindow.*;
 import static com.pj.chess.Manual.*;
 import static com.pj.chess.RecordWindow.addrlog;
 import static com.pj.chess.RecordWindow.jtextArea2;
 import static com.pj.chess.VersionFile.*;
+import static com.pj.chess.ccproperties.readProperties;
+import static com.pj.chess.ccproperties.writeProperties;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
@@ -812,7 +813,7 @@ public class ChessBoardMain extends JFrame {
                 }
                 else {
                     JOptionPane.showMessageDialog(null, "版本: " + version + "\n更新日期: " + Updatedate + "\n更新内容:\n" + Updatemessage
-                            + "\n\nBug Fixes:\n" + BugFixmessage + "\n\nGithub:\n" + Githublink + "\n最新正式版本:\n" + LatestReleases + "\n预发布版本:\n" + LatestTag + "\n" + AboutMessage, "关于", JOptionPane.PLAIN_MESSAGE);
+                            + "\n\nBug Fixes:\n" + BugFixmessage + "\n\nGithub:\n" + Githublink + "\n最新正式版本:\n" + LatestReleases + "\n预发布版本:\n" + LatestTag + "\n" + "\n发布页面:\n" + publishpage + AboutMessage, "关于", JOptionPane.PLAIN_MESSAGE);
                 }
             }else if("退出".equals(actionCommand)){
                 if (JOptionPane.showConfirmDialog(null,"确认退出?","提示",JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE)==JOptionPane.YES_OPTION){
@@ -988,16 +989,18 @@ public class ChessBoardMain extends JFrame {
         return fen;
     }
     public static void main(String args[]) {
-        versionagreed = readconfig();
+        versionagreed = readProperties("version");
+        String message = "更新日志与协议\n版本: "+version+"\n更新日期: "+Updatedate+"\n\n本次更新内容:\n "+Updatemessage+"\n\n错误修复:\n"+BugFixmessage+"\n\n"+
+                "是否同意:\n使用本程序造成的后果由使用者承担?";
+        String alphamessage = "更新日志与协议\n版本: "+alphaversion+"-alpha\n更新日期: "+alphaUpdateDate+"\n\n本次更新内容:\n "+alphaUpdatemessage+"\n\n错误修复:\n"+alphaBugFixmessage+
+                "\n\n主版本: "+version+"\n更新日期: \n"+Updatedate+"\n\n本次更新内容: \n"+Updatemessage+"\n错误修复:\n"+BugFixmessage+"\n\n"+
+                "是否同意:\n使用本程序造成的后果由使用者承担?";
         if (AlphaVersion){
             if(!Objects.equals(versionagreed, alphaversion+"-alpha")){
-                if(JOptionPane.showConfirmDialog(null,"更新日志与协议\n版本: "+alphaversion+"-alpha\n更新日期: "+alphaUpdateDate+"\n\n本次更新内容:\n "+alphaUpdatemessage+"\n\n错误修复:\n"+alphaBugFixmessage+
-                        "\n\n主版本: "+version+"\n更新日期: \n"+Updatedate+"\n\n本次更新内容: \n"+Updatemessage+"\n错误修复:\n"+BugFixmessage+"\n\n"+
-                        "是否同意:\n使用本程序造成的后果由使用者承担?","NewVersion: "+alphaversion+"-alpha",JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE)== JOptionPane.NO_OPTION){
+                if(JOptionPane.showConfirmDialog(null,alphamessage,"NewVersion: "+alphaversion+"-alpha",JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE)== JOptionPane.NO_OPTION){
                     System.exit(0);
                 }
-                Config.configinfo = alphaversion+"-alpha";
-                exportconfigevent();
+                writeProperties("version",alphaversion+"-alpha");
             }
             jtextArea.setText("");
             jtextArea2.setText("");
@@ -1005,12 +1008,10 @@ public class ChessBoardMain extends JFrame {
         }
         else{
         if(!Objects.equals(versionagreed, version)){
-            if(JOptionPane.showConfirmDialog(null,"更新日志与协议\n版本: "+version+"\n更新日期: "+Updatedate+"\n\n本次更新内容:\n "+Updatemessage+"\n\n错误修复:\n"+BugFixmessage+"\n\n"+
-                    "是否同意:\n使用本程序造成的后果由使用者承担?","NewVersion: "+version,JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE)== JOptionPane.NO_OPTION){
+            if(JOptionPane.showConfirmDialog(null,message,"NewVersion: "+version,JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE)== JOptionPane.NO_OPTION){
                 System.exit(0);
             }
-            Config.configinfo = version;
-            exportconfigevent();
+            writeProperties("version",version);
         }
         jtextArea.setText("");
         jtextArea2.setText("");
