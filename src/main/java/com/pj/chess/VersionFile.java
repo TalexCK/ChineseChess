@@ -11,10 +11,10 @@ public class VersionFile {
     public static String LatestTag = "https://github.com/TalexCK/ChineseChess/releases/tag";
     public static String AboutMessage = "";
     public static boolean AlphaVersion = true;
-    public static String alphaversion = "0.0.2.4";
+    public static String alphaversion = "0.0.2.5";
     public static String alphaUpdateDate = "2023.06.18";
-    public static String alphaUpdatemessage = "1.修改配置文件系统";
-    public static String alphaBugFixmessage = "1.JAR包内容精简";
+    public static String alphaUpdatemessage = "0.1-beta版本更新准备工作";
+    public static String alphaBugFixmessage = "";
     public static String versionagreed = "";
 
 }
