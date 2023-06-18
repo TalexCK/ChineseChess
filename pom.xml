@@ -24,7 +24,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.pj.chess.ChessBoardMain.main</mainClass>
+                            <mainClass>com.pj.chess.ChessBoardMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
