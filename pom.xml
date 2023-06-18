@@ -6,13 +6,13 @@
 
     <groupId>com.pj.chess</groupId>
     <artifactId>ChineseChess</artifactId>
-    <version>0.0.3.0</version>
+    <version>0.1-beta</version>
 
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>GB2312</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
         <plugins>
@@ -24,7 +24,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.pj.chess.ChessBoardMain</mainClass>
+                            <mainClass>com.pj.chess.ChessBoardMain.main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
