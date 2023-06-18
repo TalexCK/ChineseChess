@@ -2,6 +2,7 @@ package com.pj.chess;
 
 import static com.pj.chess.ChessConstant.*;
 import static com.pj.chess.LogWindow.addlog;
+import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,6 +19,8 @@ import java.util.regex.Pattern;
 import com.pj.chess.chessmove.MoveNode;
 import com.pj.chess.chessparam.ChessParam;
 import com.pj.chess.zobrist.TranspositionTable;
+
+import javax.swing.*;
 
 public class Tools {
 	public static int[] arrayCopy(int[] srcArray) {
@@ -213,7 +216,7 @@ public class Tools {
 			}
 		}
 	}
-	public static void seedexp(int[] board,NodeLink backMove){
+	public static void seedexp(int[] board, NodeLink backMove){
 
 
 		String[] sFen=new String[]{"","P","A","B","C","N","R","K","p","a","b","c","n","r","k"};
@@ -249,6 +252,7 @@ public class Tools {
 		}
 		//System.out.println(sb);
 		addlog("当前局面种子: "+sb);
+		JOptionPane.showMessageDialog(null,sb+"\n\n若需复制等更多操作请打开日志记录页面","当前局面种子为: ",PLAIN_MESSAGE);
 	}
 	//加载开局库
 		private static void loadBook(){

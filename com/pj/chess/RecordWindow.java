@@ -6,8 +6,7 @@ import javax.swing.text.DefaultCaret;
 public class RecordWindow {
     public RecordWindow() {
         try {
-            jtextArea2.append("[System] AI运算开启\n");
-            addrlog("运算日志开启");
+            jtextArea2.append("AI运算日志开启\n");
         }
         catch (Exception ev) {
 

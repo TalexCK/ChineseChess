@@ -5,8 +5,6 @@ import static com.pj.chess.Tools.*;
 
 import com.pj.chess.chessparam.ChessParam;
 import com.pj.chess.zobrist.TranspositionTable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * @author pengjiu
@@ -43,7 +41,6 @@ public class ChessInitialize {
 	int[][][]  gunMoreRestAttackRow=new int[9][512][9];//行(上下)
 	int[][][]  gunMoreRestAttackCol=new int[10][1024][10];   //列(左右)
 
-	private static Logger LOG = LogManager.getLogger(ChessInitialize.class);
 	public static ChessParam getGlobalChessParam(int[] boardTemp ){
 		int[] board = new int[BOARDSIZE90];
 		int[] chesses = new int[48];

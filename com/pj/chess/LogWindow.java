@@ -6,9 +6,7 @@ import javax.swing.text.DefaultCaret;
 public class LogWindow {
     public LogWindow() {
         try {
-            jtextArea.append("[System] AI日志开启\n");
-            addlog("日志传送开启");
-            addlogerror("报错测试",0);
+            jtextArea.append("AI日志开启\n");
         }
         catch (Exception ev) {
 
@@ -26,7 +24,7 @@ public class LogWindow {
         try {
             jtextArea.append("[ERROR] "+level+"级 "+error+"\n");
             if(level > 0){
-                JOptionPane.showMessageDialog(null, "警报","程序出现"+level+"级错误",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Warning","程序出现"+level+"级错误",JOptionPane.ERROR_MESSAGE);
             }
         }
         catch (Exception ev) {

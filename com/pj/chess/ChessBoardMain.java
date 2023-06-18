@@ -1,21 +1,15 @@
 package com.pj.chess;
 import static com.pj.chess.ChessConstant.*;
-import static com.pj.chess.Config.exportconfigevent;
-import static com.pj.chess.Config.readconfig;
+import static com.pj.chess.Config.*;
 import static com.pj.chess.LogWindow.*;
-import static com.pj.chess.Manual.exportmanualevent;
+import static com.pj.chess.Manual.*;
 import static com.pj.chess.RecordWindow.addrlog;
 import static com.pj.chess.RecordWindow.jtextArea2;
-import static com.pj.chess.Manual.importmanualevent;
+import static com.pj.chess.VersionFile.*;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
-import java.awt.BorderLayout;
-import java.awt.Button;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -29,13 +23,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.pj.chess.chessmove.ChessMovePlay;
 import com.pj.chess.chessmove.MoveNode;
@@ -44,7 +37,6 @@ import com.pj.chess.evaluate.EvaluateComputeMiddleGame;
 import com.pj.chess.zobrist.TranspositionTable;
 
 public class ChessBoardMain extends JFrame {
-    private static Logger LOG = LogManager.getLogger(ChessBoardMain.class);
     private static final long serialVersionUID = 1L;
     public static  final String[] chessName=new String[]{
             "   ",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
@@ -103,7 +95,6 @@ public class ChessBoardMain extends JFrame {
         play=1-moveHistory.play;
         android[1-play]=true;
         cmp=new ChessMovePlay(chessParamCont,transTable,new EvaluateComputeMiddleGame(chessParamCont));
-        LOG.info("局面种子: "+startFen);
         addlog("局面种子: "+startFen);
         Tools.getseed(chessParamCont.board,moveHistory);
 
@@ -165,21 +156,24 @@ public class ChessBoardMain extends JFrame {
     }
     public static Button nextstep = new Button("下一步");
     public static Button laststep = new Button("上一步");
+
+    public static Button newgame = new Button("新游戏");
+    public static Button button = new Button("悔棋");
+    public static Button computerMove = new Button("AI立刻走棋");
     public ChessBoardMain() {
 
         super("中国象棋");
         setCenter();
+
+        //infotolist();
 
 
 
 
         JPanel constrol=new JPanel();
         constrol.setLayout(new GridLayout(1, 1));
-        Button newgame = new Button("新游戏");
         newgame.addActionListener(my);
-        Button button = new Button("悔棋");
         button.addActionListener(my);
-        Button computerMove = new Button("AI立刻走棋");
         computerMove.addActionListener(my);
 
         nextstep.addActionListener(my);
@@ -209,28 +203,43 @@ public class ChessBoardMain extends JFrame {
     //JRadioButtonMenuItem hashSize64M = new JRadioButtonMenuItem("HASH???",false);
     public static void manualstart(){
         nextstep.setEnabled(true);
-        laststep.setEnabled(true);
+        computerMove.setEnabled(false);
+        button.setEnabled(false);
+        endmanual.setEnabled(true);
     }
     public static void manualend(){
         nextstep.setEnabled(false);
         laststep.setEnabled(false);
+        computerMove.setEnabled(true);
+        button.setEnabled(true);
+        endmanual.setEnabled(false);
     }
+    public static JMenuItem endmanual = new JMenuItem("退出棋谱");
+    public static JMenuItem matchplayer= new JMenuItem("匹配玩家");
+    public static JMenuItem personalinfomation= new JMenuItem("个人信息");
+    public static JMenuItem exitserver= new JMenuItem("取消连接");
     private JMenuBar setJMenuBar(){
         JMenuBar jmb = new JMenuBar();
         JMenu menu_file = new JMenu("游戏");
         JMenu menu_ai = new JMenu("AI等级");
         JMenu menu_net = new JMenu("联网");
         JMenu menu_manual = new JMenu("棋谱");
+        JMenu menu_else = new JMenu("其他");
         JMenuItem create = new JMenuItem("新建");
         JMenuItem save= new JMenuItem("保存");
         JMenuItem imports= new JMenuItem("导入");
-        JMenuItem connect= new JMenuItem("连接");
+        JMenuItem connectclient= new JMenuItem("端对端直连");
+        JMenuItem connect= new JMenuItem("服务器连接");
         JMenuItem seedimport= new JMenuItem("种子导入");
         JMenuItem seedexport= new JMenuItem("种子导出");
         JMenuItem importmanual = new JMenuItem("导入棋谱");
         JMenuItem exportmanual = new JMenuItem("导出棋谱");
         JMenuItem logwindow = new JMenuItem("打开日志记录窗口");
         JMenuItem recordwindow = new JMenuItem("打开AI运算输出窗口");
+        JMenuItem aboutme = new JMenuItem("关于");
+        JMenuItem exitthis = new JMenuItem("退出");
+        JMenuItem aitoai = new JMenuItem("观看AI对弈");
+        endmanual.setEnabled(false);
         JRadioButtonMenuItem mi_6 = new JRadioButtonMenuItem("菜鸟",true);
         JRadioButtonMenuItem mi_7 = new JRadioButtonMenuItem("入门",false);
         JRadioButtonMenuItem mi_8 = new JRadioButtonMenuItem("业余",false);
@@ -245,6 +254,7 @@ public class ChessBoardMain extends JFrame {
         group.add(mi_9);
         group.add(mi_10);
         group.add(mi_11);
+        aboutme.addActionListener(menuItemAction);
         create.addActionListener(menuItemAction);
         save.addActionListener(menuItemAction);
         imports.addActionListener(menuItemAction);
@@ -255,12 +265,19 @@ public class ChessBoardMain extends JFrame {
         mi_10.addActionListener(menuItemAction);
         mi_11.addActionListener(menuItemAction);
         connect.addActionListener(menuItemAction);
+        connectclient.addActionListener(menuItemAction);
+        personalinfomation.addActionListener(menuItemAction);
+        matchplayer.addActionListener(menuItemAction);
+        exitserver.addActionListener(menuItemAction);
         seedimport.addActionListener(menuItemAction);
         seedexport.addActionListener(menuItemAction);
         importmanual.addActionListener(menuItemAction);
         exportmanual.addActionListener(menuItemAction);
         logwindow.addActionListener(menuItemAction);
         recordwindow.addActionListener(menuItemAction);
+        endmanual.addActionListener(menuItemAction);
+        exitthis.addActionListener(menuItemAction);
+        aitoai.addActionListener(menuItemAction);
 
         create.setMnemonic(10);
         mi_6.setMnemonic(2);
@@ -273,6 +290,7 @@ public class ChessBoardMain extends JFrame {
         menu_file.add(imports);
         menu_manual.add(importmanual);
         menu_manual.add(exportmanual);
+        menu_manual.add(endmanual);
         menu_ai.add(mi_6);
         menu_ai.add(mi_7);
         menu_ai.add(mi_8);
@@ -282,13 +300,17 @@ public class ChessBoardMain extends JFrame {
         menu_file.add(seedimport);
         menu_file.add(seedexport);
         menu_file.add(save);
+        menu_else.add(aboutme);
+        menu_else.add(exitthis);
+        menu_net.add(connectclient);
         menu_net.add(connect);
-        menu_file.add(logwindow);
-        menu_file.add(recordwindow);
+        menu_net.add(personalinfomation);
+        menu_net.add(matchplayer);
+        menu_net.add(exitserver);
         jmb.add(menu_file);
         jmb.add(menu_ai);
         jmb.add(menu_manual);
-        jmb.add(menu_net);
+        //jmb.add(menu_net);
 
         //------------------------------------------------------
         JMenu menu_set = new JMenu("设置");
@@ -323,13 +345,28 @@ public class ChessBoardMain extends JFrame {
         menu_set.add(blackCmp);
         //menu_set.add(redCmp);
         menu_set.add(doubles);
+        menu_set.add(aitoai);
         //menu_set.add(hashSize2M);
         //menu_set.add(hashSize32M);
         //menu_set.add(hashSize64M);
         menu_set.add(backstageThink);
         menu_set.add(isSoundBox);
+        menu_set.add(logwindow);
+        menu_set.add(recordwindow);
         jmb.add(menu_set);
+        jmb.add(menu_else);
+        noconnectedserver();
         return jmb;
+    }
+    public static void connectedserver(){
+        matchplayer.setEnabled(true);
+        personalinfomation.setEnabled(true);
+        exitserver.setEnabled(true);
+    }
+    public static void noconnectedserver(){
+        matchplayer.setEnabled(false);
+        personalinfomation.setEnabled(false);
+        exitserver.setEnabled(false);
     }
     public static void setBoardIconUnchecked(int site, int chess){
 //		site=boardMap[site];
@@ -387,21 +424,34 @@ public class ChessBoardMain extends JFrame {
                     }
                     i++;
                 }
-                LOG.info("Player: "+"悔棋一步");
                 addlog("Player: "+"悔棋一步");
             }else if(sour.getLabel().equals("AI立刻走棋")){
                 if(_AIThink!=null){
                     _AIThink.setStop();
                 }
             }else if(sour.getLabel().equals("新游戏")){
-                dispose();
+                disposeinn();
+                clearmanuallist();
                 new ChessBoardMain();
             }else if(sour.getLabel().equals("下一步")){
                 manualtime++;
                 manualloadatime(manualtime);
+                if (manualtime>=manuallistread.size()-1){
+                    nextstep.setEnabled(false);
+                }
+                if (manualtime>0){
+                    laststep.setEnabled(true);
+                }
             }else if(sour.getLabel().equals("上一步")){
                 manualtime=manualtime-1;
                 manualloadatime(manualtime);
+                if (manualtime<manuallistread.size()){
+                    nextstep.setEnabled(true);
+                }
+                if (manualtime<=0){
+                    laststep.setEnabled(false);
+                }
+
             }
 
 
@@ -542,7 +592,8 @@ public class ChessBoardMain extends JFrame {
     public void gameOverMsg(String msg){
         if (JOptionPane.showConfirmDialog(this, msg, "游戏结束 是否继续？",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            dispose();
+            disposeinn();
+            clearmanuallist();
             new ChessBoardMain();
         }
     }
@@ -576,6 +627,19 @@ public class ChessBoardMain extends JFrame {
         ImageIcon  imageIcon=new  ImageIcon(ChessBoardMain.class.getResource(path));
         return imageIcon;
     }
+    public static void GameEnd(){
+        if(aitoai==1){
+            SimpleDateFormat sdf = new SimpleDateFormat();
+            sdf.applyPattern("yyyy-MM-dd+HH:mm:ss");
+            Date date = new Date();
+            String filename = "aitoai-"+sdf.format(date);
+            exportmanualevent(filename);
+            if (JOptionPane.showConfirmDialog(null,"棋谱已导出为: "+filename+" 确认导入?","提示",JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE)==JOptionPane.YES_OPTION){
+                importmanualevent(filename);
+            }
+            aitoai = 0;
+        }
+    }
 
     private boolean checkGameOver(){
         boolean isGameOver=false;
@@ -583,17 +647,14 @@ public class ChessBoardMain extends JFrame {
         if(moveHistory==null || moveHistory.getMoveNode()==null){
             msg="绝杀";
             isGameOver=true;
-            LOG.info("GameOver: "+"绝杀");
             addlog("GameOver: "+"绝杀");
         }else if(chessParamCont.allChess[chessPlay[BLACKPLAYSIGN]]==NOTHING || moveHistory.getMoveNode().destChess==chessPlay[BLACKPLAYSIGN]){
             isGameOver=true;
             msg="绝杀";
-            LOG.info("GameOver: "+"绝杀");
             addlog("GameOver: "+"绝杀");
         }else if(chessParamCont.allChess[chessPlay[REDPLAYSIGN]]==NOTHING || moveHistory.getMoveNode().destChess==chessPlay[REDPLAYSIGN]){
             msg="绝杀";
             isGameOver=true;
-            LOG.info("GameOver: "+"绝杀");
             addlog("GameOver: "+"绝杀");
         }else if(moveHistory.getMoveNode().score==-LONGCHECKSCORE){
             msg=(play==BLACKPLAYSIGN?"黑方":"红方")+"长将判负！";
@@ -603,28 +664,27 @@ public class ChessBoardMain extends JFrame {
             setCheckedLOSS(play);
             msg="绝杀";
             isGameOver=true;
-            LOG.info("GameOver: "+"绝杀");
             addlog("GameOver: "+"绝杀");
         }else if(moveHistory.getMoveNode().score>=(maxScore-2)){
             setCheckedLOSS(1-play);
             msg=(play==BLACKPLAYSIGN?"黑方":"红方")+"胜";
             isGameOver=true;
-            LOG.info("GameOver: "+(play==BLACKPLAYSIGN?"黑方":"红方")+"胜");
             addlog("GameOver: "+(play==BLACKPLAYSIGN?"黑方":"红方")+"胜");
         }else if(chessParamCont.getAttackChessesNum(REDPLAYSIGN)==0 && chessParamCont.getAttackChessesNum(BLACKPLAYSIGN)==0){
             msg="双方均无攻击棋子判和";
-            LOG.info("GameOver: "+"双方均无攻击棋子判和");
             addlog("GameOver: "+"双方均无攻击棋子判和");
             isGameOver=true;
         }else if(turn_num>=300){
             msg="回合数超过300判和";
-            LOG.info("GameOver: "+"回合数超过300判和");
             addlog("GameOver: "+"回合数超过300判和");
             isGameOver=true;
         }
         if(isGameOver){
             launchSound(SoundEffect.LOSS_SOUND);
-            gameOverMsg(msg);
+            if (aitoai == 0){
+                gameOverMsg(msg);
+            }
+            GameEnd();
         }else{
             MoveNode moveNode = moveHistory.getMoveNode();
             if(cmp.checked(1-play)){
@@ -638,6 +698,10 @@ public class ChessBoardMain extends JFrame {
         }
         return isGameOver;
     }
+    public void disposeinn(){
+        dispose();
+    }
+    public static Integer aitoai = 0;
     public static void checktip(){
         JOptionPane.showMessageDialog(null,"将军","提示?",JOptionPane.PLAIN_MESSAGE);
     }
@@ -645,7 +709,8 @@ public class ChessBoardMain extends JFrame {
         public void actionPerformed(ActionEvent e) {
             String actionCommand=e.getActionCommand();
             if("新建".equals(actionCommand)){
-                dispose();
+                disposeinn();
+                clearmanuallist();
                 new ChessBoardMain();
             }else if("保存".equalsIgnoreCase(actionCommand)){
                 Tools.saveFEN(chessParamCont.board,moveHistory);
@@ -692,29 +757,72 @@ public class ChessBoardMain extends JFrame {
                     play=REDPLAYSIGN;
                     moveHistory.play=1-REDPLAYSIGN;
                 }
+            }else if("观看AI对弈".equals(actionCommand)){
+                android[BLACKPLAYSIGN]=!android[BLACKPLAYSIGN];
+                if(turn_num<=0){
+                    play=REDPLAYSIGN;
+                    moveHistory.play=1-REDPLAYSIGN;
+                }
+                android[BLACKPLAYSIGN]=!android[BLACKPLAYSIGN];
+                if(android[BLACKPLAYSIGN] && (BLACKPLAYSIGN==play || turn_num<=0)){
+                    if(turn_num<=0){
+                        play=BLACKPLAYSIGN;
+                        moveHistory.play=1-BLACKPLAYSIGN;
+                    }
+                    computeThinkStart();
+                }
+                android[REDPLAYSIGN]=!android[REDPLAYSIGN];
+                if(android[REDPLAYSIGN] && (REDPLAYSIGN==play || turn_num<=0) ){
+                    if(turn_num<=0){
+                        play=REDPLAYSIGN;
+                        moveHistory.play=1-REDPLAYSIGN;
+                    }
+                    computeThinkStart();
+                }
+                aitoai = 1;
             }else if("后台思考".equals(actionCommand)){
                 isBackstageThink=!isBackstageThink;
-                LOG.info("Player: "+"切换后台思考");
                 addlog("Player: "+"切换后台思考");
             }else if("音效".equals(actionCommand)){
                 isSound=!isSound;
-                LOG.info("Player: "+"切换音效");
                 addlog("Player: "+"切换音效");
-            }else if("连接".equals(actionCommand)){
-                JOptionPane.showMessageDialog(null, "暂未开放","提示",JOptionPane.PLAIN_MESSAGE);
-                //String nickname = JOptionPane.showInputDialog(null, "请输入昵称\n","提示",JOptionPane.PLAIN_MESSAGE);
-                //String yoursecret = JOptionPane.showInputDialog(null, "请输入密码\n","提示",JOptionPane.PLAIN_MESSAGE);
-                //new ClientDia(com.pj.chess.client.ClientDia.socket, nickname, yoursecret);
+            }else if("服务器连接".equals(actionCommand)){
+                //com.pj.chess.internetplay.Connection.Connection();
             }else if("导入棋谱".equals(actionCommand)){
                 String filename = JOptionPane.showInputDialog(null,"请输入棋谱文件名(无需后缀):\n","棋谱",JOptionPane.PLAIN_MESSAGE);
                 importmanualevent(filename);
             }else if("导出棋谱".equals(actionCommand)){
                 String filename = JOptionPane.showInputDialog(null,"请命名棋谱:\n","棋谱",JOptionPane.PLAIN_MESSAGE);
                 exportmanualevent(filename);
+            }else if("退出棋谱".equals(actionCommand)){
+                if (JOptionPane.showConfirmDialog(null,"确认退出棋谱模式","提示",JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE)==JOptionPane.YES_OPTION){
+                    manualend();
+                    disposeinn();
+                    new ChessBoardMain();
+                }
             }else if("打开日志记录窗口".equals(actionCommand)){
                 com.pj.chess.LogWindow.logwindow();
             }else if("打开AI运算输出窗口".equals(actionCommand)){
                 com.pj.chess.RecordWindow.recordwindow();
+            }else if("关于".equals(actionCommand)){
+                if (AlphaVersion){
+                    JOptionPane.showMessageDialog(null, "版本: " + alphaversion + "-alpha\n更新日期: " + alphaUpdateDate + "\n更新内容:\n" + alphaUpdatemessage
+                            + "\n\nBug Fixes:\n" + alphaBugFixmessage +"\n\n主版本: " + version + "\n更新日期: " + Updatedate + "\n更新内容:\n" + Updatemessage
+                            + "\n\nBug Fixes:\n" + BugFixmessage+ "\n\nGithub:\n" + Githublink + "\n最新正式版本:\n" + LatestReleases + "\n预发布版本:\n" + LatestTag + "\n" + AboutMessage, "关于", JOptionPane.PLAIN_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "版本: " + version + "\n更新日期: " + Updatedate + "\n更新内容:\n" + Updatemessage
+                            + "\n\nBug Fixes:\n" + BugFixmessage + "\n\nGithub:\n" + Githublink + "\n最新正式版本:\n" + LatestReleases + "\n预发布版本:\n" + LatestTag + "\n" + AboutMessage, "关于", JOptionPane.PLAIN_MESSAGE);
+                }
+            }else if("退出".equals(actionCommand)){
+                if (JOptionPane.showConfirmDialog(null,"确认退出?","提示",JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE)==JOptionPane.YES_OPTION){
+                    System.exit(0);
+                }
+            }else if("端对端直连".equals(actionCommand)){
+                //com.pj.chess.internetplay.ClientPlay.Connection();
+            }else if("匹配玩家".equals(actionCommand)){
+            }else if("个人信息".equals(actionCommand)){
+            }else if("取消连接".equals(actionCommand)){
             }
         }
 
@@ -722,12 +830,12 @@ public class ChessBoardMain extends JFrame {
 
     private void opponentMove(){
         setHashTablesEnabled();
+        Tools.getseed(chessParamCont.board,moveHistory);
         //??????????
         if(!checkGameOver()){
             turn_num++;
             play=1-play; //???????
             //????????????
-            Tools.getseed(chessParamCont.board,moveHistory);
             if(android[play]){
                 computeThinkStart();
             }
@@ -742,7 +850,6 @@ public class ChessBoardMain extends JFrame {
                 new Thread(){
                     public void run(){
                         System.out.println("---->猜测命中！！");
-                        LOG.info("后台思考"+"---->猜测命中！！");
                         addrlog("后台思考"+"---->猜测命中！！");
                         try {
                             //??????????
@@ -759,7 +866,6 @@ public class ChessBoardMain extends JFrame {
                 new Thread(){
                     public void run(){
                         System.out.println("--->未命中");
-                        LOG.info("后台思考"+"--->未命中");
                         addrlog("后台思考"+"--->未命中");
                         //?????н???????
                         backstageAIThink.setStop();
@@ -769,7 +875,6 @@ public class ChessBoardMain extends JFrame {
                             e.printStackTrace();
                         }
                         System.out.println("--->重新思考");
-                        LOG.info("后台思考"+"--->重新思考");
                         addrlog("后台思考"+"--->重新思考");
                         computeThink();
                     }
@@ -814,7 +919,6 @@ public class ChessBoardMain extends JFrame {
                     guessLink = moveHistory.getNextLink();
                     backstageAIThink.setLocalVariable(computerLevel,chessParamCont,guessLink);
                     System.out.println("---->开始猜测("+guessLink.getMoveNode()+")");
-                    LOG.info("---->开始猜测("+guessLink.getMoveNode()+")");
                     addrlog("---->开始猜测("+guessLink.getMoveNode()+")");
                     backstageAIThink.guessRun(guessLink.getMoveNode());
                 }
@@ -857,7 +961,6 @@ public class ChessBoardMain extends JFrame {
                         turn_num=20;
                     }catch(Exception e){
                         System.err.println("========读取历史记录出错 moves.dat");
-                        LOG.error("========读取历史记录出错 moves.dat");
                         addlogerror("========读取历史记录出错 moves.dat",1);
                         JOptionPane.showMessageDialog(null, "读取历史记录出错","导入",JOptionPane.PLAIN_MESSAGE);
                     }finally{
@@ -885,35 +988,34 @@ public class ChessBoardMain extends JFrame {
         return fen;
     }
     public static void main(String args[]) {
-        if(!Objects.equals(readconfig(), "true")){
-            if(JOptionPane.showConfirmDialog(null,"欢迎使用中国象棋Java程序!\n本次更新如下:\n1.增加AI运算与后台思考的输出界面\n" +
-                    "2.增加报错输出界面与日志输出界面\n" +
-                    "3.取消HASH表的选项\n" +
-                    "4.由\"切换电脑方\"选项替换\"电脑红方\"选项、\"电脑黑方\"选项\n" +
-                    "5.增加\"双人对战\"选项\n" +
-                    "6.导入功能从打开弹出对话框改到\"游戏\"菜单内选项\n" +
-                    "7.增加\"种子\"概念，增加\"种子导入\"\"种子导出\"功能，可以由一条文本导入和导出对局\n" +
-                    "8.悔棋会多悔棋一步，在与电脑对战时方便很多\n" +
-                    "9.以下行为将会被日志记录:\n" +
-                    "(1)打开软件\n" +
-                    "(2)悔棋\n" +
-                    "(3)导出种子\n" +
-                    "(4)导入种子\n" +
-                    "(5)游戏结束\n" +
-                    "(6)后台思考的切换\n" +
-                    "(7)音效的切换\n" +
-                    "(8)程序错误\n" +
-                    "10.以下行为将会被AI运算输出:\n" +
-                    "(1)AI走子运算\n" +
-                    "(2)后台思考运算\n\n"+"是否同意(使用本程序造成的后果由使用者承担)?","欢迎",JOptionPane.YES_NO_OPTION)== JOptionPane.NO_OPTION){
+        versionagreed = readconfig();
+        if (AlphaVersion){
+            if(!Objects.equals(versionagreed, alphaversion+"-alpha")){
+                if(JOptionPane.showConfirmDialog(null,"更新日志与协议\n版本: "+alphaversion+"-alpha\n更新日期: "+alphaUpdateDate+"\n\n本次更新内容:\n "+alphaUpdatemessage+"\n\n错误修复:\n"+alphaBugFixmessage+
+                        "\n\n主版本: "+version+"\n更新日期: \n"+Updatedate+"\n\n本次更新内容: \n"+Updatemessage+"\n错误修复:\n"+BugFixmessage+"\n\n"+
+                        "是否同意:\n使用本程序造成的后果由使用者承担?","NewVersion: "+alphaversion+"-alpha",JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE)== JOptionPane.NO_OPTION){
+                    System.exit(0);
+                }
+                Config.configinfo = alphaversion+"-alpha";
+                exportconfigevent();
+            }
+            jtextArea.setText("");
+            jtextArea2.setText("");
+            new ChessBoardMain();
+        }
+        else{
+        if(!Objects.equals(versionagreed, version)){
+            if(JOptionPane.showConfirmDialog(null,"更新日志与协议\n版本: "+version+"\n更新日期: "+Updatedate+"\n\n本次更新内容:\n "+Updatemessage+"\n\n错误修复:\n"+BugFixmessage+"\n\n"+
+                    "是否同意:\n使用本程序造成的后果由使用者承担?","NewVersion: "+version,JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE)== JOptionPane.NO_OPTION){
                 System.exit(0);
             }
-            Config.configinfo = "true";
+            Config.configinfo = version;
             exportconfigevent();
         }
         jtextArea.setText("");
         jtextArea2.setText("");
         new ChessBoardMain();
+        }
     }
     public void launchSound(int type){
         if(isSound){ //??????Ч

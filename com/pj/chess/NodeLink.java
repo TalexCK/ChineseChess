@@ -5,15 +5,12 @@ import static com.pj.chess.RecordWindow.addrlog;
 import java.io.Serializable;
 
 import com.pj.chess.chessmove.MoveNode;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**棋子着法链表
 	 * @author pengjiu
 	 */
 	public class NodeLink implements Serializable{
 		private NodeLink lastLink;
-		private static final Logger LOG = LogManager.getLogger(NodeLink.class);
 		private NodeLink nextLink;
 		public int depth=0;
 		private MoveNode moveNode;
@@ -93,17 +90,14 @@ import org.apache.logging.log4j.Logger;
 //			}
 			NodeLink nextLink = firstLink;
 			sb.append("==========================================================\n");
-			LOG.info("==========================================================\n");
 			addrlog("==========================================================");
 			while(nextLink!=null){
 					MoveNode movenode=nextLink.getMoveNode();
 					sb.append(" 第->").append(nextLink.depth).append("步 ").append(movenode).append("\t"+(nextLink.isQuiesc?"静态搜索":"正常搜索")+"\t"+(nextLink.chk?"将军":"无将军")+"\n");
-					LOG.info(" 第->" + nextLink.depth+"步 " + " " +(nextLink.isQuiesc?"静态搜索":"正常搜索")+(nextLink.chk?"将军":"无将军")+"\n");
 					addrlog(" 第->" + nextLink.depth+"步 " + movenode + "" +(nextLink.isQuiesc?"静态搜索":"正常搜索")+"\t"+(nextLink.chk?"将军":"无将军")+"");
 					nextLink=nextLink.getNextLink();
 			}
 			sb.append("==========================================================\n");
-			LOG.info("==========================================================\n");
 			addrlog("==========================================================");
 			return sb.toString();
 		}
