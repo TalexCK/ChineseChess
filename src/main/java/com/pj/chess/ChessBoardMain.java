@@ -7,6 +7,7 @@ import static com.pj.chess.RecordWindow.jtextArea2;
 import static com.pj.chess.VersionFile.*;
 import static com.pj.chess.ccproperties.readProperties;
 import static com.pj.chess.ccproperties.writeProperties;
+import static com.pj.chess.multiplayer.clienttoclient.*;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
@@ -52,8 +53,8 @@ public class ChessBoardMain extends JFrame {
     int lastTimeCheckedSite=-1;
     private ButtonActionListener my = new ButtonActionListener();
     static JLabel[] buttons=new JLabel[BOARDSIZE90];
-    int play=1;
-    volatile boolean[] android=new boolean[]{false,false};
+    public static Integer play=1;
+    static volatile boolean[] android=new boolean[]{false,false};
     int begin=-1;
     int end=0;
     private static ComputerLevel computerLevel=ComputerLevel.greenHand;
@@ -64,11 +65,11 @@ public class ChessBoardMain extends JFrame {
     AICoreHandler _AIThink=new AICoreHandler();
     AICoreHandler backstageAIThink=new AICoreHandler();
     //	public static List<MoveNode> backMove=new ArrayList<MoveNode>();
-    NodeLink moveHistory;
-    int turn_num=0;
+    static NodeLink moveHistory;
+    static int turn_num=0;
     static ChessParam chessParamCont;
     private static boolean isSound=false;
-    public String startFen="c6c5  rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR b - - 0 1";
+    public static String startFen="c6c5  rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR b - - 0 1";
     public void initHandler(){
 
 
@@ -198,6 +199,7 @@ public class ChessBoardMain extends JFrame {
         this.setResizable(false);
         this.setVisible(true);
     }
+    public static Integer multiplayer = 0;
     private MenuItemActionListener menuItemAction=new MenuItemActionListener();
     //JRadioButtonMenuItem hashSize2M = new JRadioButtonMenuItem("HASH??С",true);
     //JRadioButtonMenuItem hashSize32M = new JRadioButtonMenuItem("HASH????",false);
@@ -304,14 +306,14 @@ public class ChessBoardMain extends JFrame {
         menu_else.add(aboutme);
         menu_else.add(exitthis);
         menu_net.add(connectclient);
-        menu_net.add(connect);
-        menu_net.add(personalinfomation);
-        menu_net.add(matchplayer);
-        menu_net.add(exitserver);
+        //menu_net.add(connect);
+        //menu_net.add(personalinfomation);
+        //menu_net.add(matchplayer);
+        //menu_net.add(exitserver);
         jmb.add(menu_file);
         jmb.add(menu_ai);
         jmb.add(menu_manual);
-        //jmb.add(menu_net);
+        jmb.add(menu_net);
 
         //------------------------------------------------------
         JMenu menu_set = new JMenu("设置");
@@ -572,16 +574,29 @@ public class ChessBoardMain extends JFrame {
                     end=i;
                     if (this.checkZFPath(begin, end, play)) {
                         MoveNode moveNode = new MoveNode(begin, end, chessParamCont.board[begin], chessParamCont.board[end], 0);
-                        showMoveNode(moveNode);
+                        try {
+                            showMoveNode(moveNode);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         NodeLink nextLink = new NodeLink(play, transTable.boardZobrist32, transTable.boardZobrist64);
                         nextLink.setMoveNode(moveNode);
                         moveHistory.setNextLink(nextLink);
                         moveHistory = moveHistory.getNextLink();
                         begin = -1;
-                        opponentMove();
+                        try {
+                            opponentMove();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
             }
+
 
         }
 
@@ -621,6 +636,23 @@ public class ChessBoardMain extends JFrame {
         }
 
         transTable=new TranspositionTable() ;
+    }
+
+    public static void seedtoloadatime(String seed){
+        String[] fenArray = Tools.fenToFENArray(seed);
+        int[] boardTemp = Tools.parseFEN(fenArray[1]);
+        //??????????????
+        chessParamCont=ChessInitialize.getGlobalChessParam(boardTemp);
+        //??????н?????
+        clearBoardIcon();
+        //???????????
+        for(int i=0;i<boardTemp.length;i++){
+            if(boardTemp[i]>0){
+                setBoardIconUnchecked(i,boardTemp[i]);
+            }
+        }
+
+        transTable=new TranspositionTable();
     }
 
     private static ImageIcon getImageIcon(String chessName){
@@ -820,7 +852,7 @@ public class ChessBoardMain extends JFrame {
                     System.exit(0);
                 }
             }else if("端对端直连".equals(actionCommand)){
-                //com.pj.chess.internetplay.ClientPlay.Connection();
+                handshaking();
             }else if("匹配玩家".equals(actionCommand)){
             }else if("个人信息".equals(actionCommand)){
             }else if("取消连接".equals(actionCommand)){
@@ -829,7 +861,15 @@ public class ChessBoardMain extends JFrame {
 
     }
 
-    private void opponentMove(){
+    public static void doubles(){
+        android[BLACKPLAYSIGN]=!android[BLACKPLAYSIGN];
+        if(turn_num<=0){
+            play=REDPLAYSIGN;
+            moveHistory.play=1-REDPLAYSIGN;
+        }
+    }
+
+    private void opponentMove() throws IOException, InterruptedException {
         setHashTablesEnabled();
         Tools.getseed(chessParamCont.board,moveHistory);
         //??????????
@@ -840,7 +880,25 @@ public class ChessBoardMain extends JFrame {
             if(android[play]){
                 computeThinkStart();
             }
+
         }
+        new Thread(){
+            public void run(){
+                addlog("Test: "+seedexport());
+                try {
+                    astep(seedexport());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.start();
+
+    }
+    public static String seedexport(){
+        addlog(String.valueOf(Tools.seedexporttime(chessParamCont.board,moveHistory)));
+        return String.valueOf(Tools.seedexporttime(chessParamCont.board,moveHistory));
     }
     private void computeThinkStart(){
         jtextArea2.setText("");
@@ -860,7 +918,13 @@ public class ChessBoardMain extends JFrame {
                             e.printStackTrace();
                             computeThink();
                         }
-                        computeAIMoving(guessLink.getNextLink());
+                        try {
+                            computeAIMoving(guessLink.getNextLink());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }.start();
             }else{
@@ -891,12 +955,18 @@ public class ChessBoardMain extends JFrame {
                 _AIThink.setLocalVariable(computerLevel,chessParamCont,moveHistory);
                 _AIThink.launchTimer();
                 _AIThink.run();
-                computeAIMoving(moveHistory.getNextLink());
+                try {
+                    computeAIMoving(moveHistory.getNextLink());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }.start();
     }
 
-    private void computeAIMoving(NodeLink nodeLink) {
+    private void computeAIMoving(NodeLink nodeLink) throws IOException, InterruptedException {
         moveHistory = nodeLink;
         // if(!checkGameOver()){
         if (nodeLink != null && nodeLink.getMoveNode() != null) {
@@ -927,12 +997,15 @@ public class ChessBoardMain extends JFrame {
             backstageThinkThread.start();
         }
     }
-    private void showMoveNode(MoveNode moveNode){
+    private void showMoveNode(MoveNode moveNode) throws IOException, InterruptedException {
         if(moveNode!=null){
             move(moveNode);
             cmp.moveOperate(moveNode);
             transTable.synchroZobristBoardToStatic();
         }
+
+
+
     }
     private void setHashTablesEnabled(){
         //hashSize2M.setEnabled(false);
@@ -989,6 +1062,10 @@ public class ChessBoardMain extends JFrame {
         return fen;
     }
     public static void main(String args[]) {
+        if(Debugmode){
+            com.pj.chess.LogWindow.logwindow();
+            addlog("已开启DebugMode");
+        }
         versionagreed = readProperties("version");
         String message = "更新日志与协议\n版本: "+version+"\n更新日期: "+Updatedate+"\n\n本次更新内容:\n "+Updatemessage+"\n\n错误修复:\n"+BugFixmessage+"\n\n"+
                 "是否同意:\n使用本程序造成的后果由使用者承担?";
