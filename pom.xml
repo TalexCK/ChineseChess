@@ -6,7 +6,7 @@
 
     <groupId>com.pj.chess</groupId>
     <artifactId>ChineseChess</artifactId>
-    <version>0.1-beta</version>
+    <version>0.1-beta.2</version>
 
 
     <properties>
