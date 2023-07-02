@@ -30,7 +30,7 @@ import com.pj.chess.movelist.MoveNodeList;
 			this.isChecked=isChecked;
 		}
 		/*
-		 * ��̬����
+		 * ???????
 		 */
 		public MoveNodesSort(int play,ChessMoveAbs chessMove,boolean isChecked){
 			this.play=play;
@@ -39,14 +39,14 @@ import com.pj.chess.movelist.MoveNodeList;
 			this.isChecked=isChecked;
 		}
 		/*
-		 * ��̬����
+		 * ???????
 		 */
 		public MoveNode quiescNext(){
 			MoveNode nextMoveNode = null;
 			switch (moveType) {
-			case QUIESDEFAULT:  // �����ŷ�
+			case QUIESDEFAULT:  // ???????
 				setMoveType(EATMOVE);
-			case EATMOVE:  // �����ŷ�
+			case EATMOVE:  // ???????
 				if(index==0){
 					genEatMoveList();
 				}
@@ -56,15 +56,15 @@ import com.pj.chess.movelist.MoveNodeList;
 					return nextMoveNode;
 				} else {
 					if(isChecked){
-						//��������ȫ���߷�
+						//??????????????
 						setMoveType(OTHERALLMOVE);
 					}else{
-						//�ǽ���ֻ���������ŷ����������
+						//??????????????????????????
 						setMoveType(OVER);
 						break;
 					}
 				}
-			case OTHERALLMOVE:  // �����ŷ�
+			case OTHERALLMOVE:  // ???????
 				if(index==0){
 					genNopMoveList();
 				}
@@ -81,7 +81,7 @@ import com.pj.chess.movelist.MoveNodeList;
 		public MoveNode next(){
 			MoveNode nextMoveNode = null;
 			switch (moveType) {
-			case TRANGODMOVE1:  // �û���������ŷ�
+			case TRANGODMOVE1:  // ?????????????
 				this.currType=tran1;
 				nextMoveNode = tranGodMove.get(0);
 				setMoveType(TRANGODMOVE2);
@@ -90,7 +90,7 @@ import com.pj.chess.movelist.MoveNodeList;
 					repeatMoveList.add(nextMoveNode);
 					return nextMoveNode;
 				}
-			case TRANGODMOVE2:  // �û���������ŷ�
+			case TRANGODMOVE2:  // ?????????????
 				this.currType=tran2;
 				nextMoveNode = tranGodMove.get(1);
 				setMoveType(KILLERMOVE1);
@@ -99,7 +99,7 @@ import com.pj.chess.movelist.MoveNodeList;
 					repeatMoveList.add(nextMoveNode);
 					return nextMoveNode;
 				} 
-			case KILLERMOVE1:   // ɱ�ֱ��ŷ�
+			case KILLERMOVE1:   // ???????
 				this.currType=kill1;
 				nextMoveNode = KillerMove[0];
 				setMoveType(KILLERMOVE2);
@@ -108,7 +108,7 @@ import com.pj.chess.movelist.MoveNodeList;
 					repeatMoveList.add(nextMoveNode);
 					return nextMoveNode;
 				}
-			case KILLERMOVE2:   // ɱ�ֱ��ŷ�
+			case KILLERMOVE2:   // ???????
 				this.currType=kill2;
 				nextMoveNode = KillerMove[1];
 				setMoveType(EATMOVE);
@@ -117,7 +117,7 @@ import com.pj.chess.movelist.MoveNodeList;
 					repeatMoveList.add(nextMoveNode);
 					return nextMoveNode;
 				}				
-			case EATMOVE:  // �����ŷ�
+			case EATMOVE:  // ???????
 				this.currType=eatmove;
 				if(index==0){
 					oppAttackSite=chessMove.getOppAttackSite(play);
@@ -131,7 +131,7 @@ import com.pj.chess.movelist.MoveNodeList;
 				} else {
 					setMoveType(OTHERALLMOVE);
 				}
-			case OTHERALLMOVE:  // �����ŷ�
+			case OTHERALLMOVE:  // ???????
 				this.currType=other;
 				if(index==0){
 					genNopMoveList();
@@ -184,25 +184,25 @@ import com.pj.chess.movelist.MoveNodeList;
 //				
 //			}
 			/*if(moveType==EATMOVE){
-				if(!isChecked){ //û�н���
+				if(!isChecked){ //??��???
 					generalMoveList=new MoveNodeList(100);
 					goodMoveList=new MoveNodeList(30);
 					chessMove.setMoveNodeList(generalMoveList,goodMoveList);
 					chessMove.genEatMoveList(play);
-				}else{  //����
+				}else{  //????
 					goodMoveList=new MoveNodeList(50);
 					chessMove.setMoveNodeList(goodMoveList,goodMoveList);
-					//�⽫������ŷ�
+					//??????????
 					chessMove.genFristMoveListCheckMate(play);
 				}
 			}else if(moveType==OTHERALLMOVE){
-				if(!isChecked){ //û�н���
+				if(!isChecked){ //??��???
 					chessMove.setMoveNodeList(generalMoveList, goodMoveList);
 					chessMove.genNopMoveList(play);
 				}else{
 					generalMoveList=new MoveNodeList(80);
 					chessMove.setMoveNodeList(generalMoveList,generalMoveList);
-					//�⽫�������ŷ�
+					//???????????
 					chessMove.genSecondlyMoveListCheckMate(play);
 				}
  			}*/
@@ -210,7 +210,7 @@ import com.pj.chess.movelist.MoveNodeList;
 			this.index = 0;			
 		}
 		/*
-		 * ����ȡ����ǰ����ŷ�
+		 * ????????????????
 		 */
 		public MoveNode getSortAfterBestMove(MoveNodeList AllmoveNode){
 			int replaceIndex=index;

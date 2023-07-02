@@ -4,6 +4,7 @@ import static com.pj.chess.LogWindow.*;
 import static com.pj.chess.Manual.*;
 import static com.pj.chess.RecordWindow.addrlog;
 import static com.pj.chess.RecordWindow.jtextArea2;
+import static com.pj.chess.Tools.seedexp;
 import static com.pj.chess.VersionFile.*;
 import static com.pj.chess.ccproperties.readProperties;
 import static com.pj.chess.ccproperties.writeProperties;
@@ -551,6 +552,7 @@ public class ChessBoardMain extends JFrame {
         }
 
         public void mousePressed(MouseEvent e) {
+            String seed = null;
             if(android[play]){
                 return;
             }
@@ -588,6 +590,7 @@ public class ChessBoardMain extends JFrame {
                         begin = -1;
                         try {
                             opponentMove();
+                            moved=1;
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         } catch (InterruptedException ex) {
@@ -596,6 +599,22 @@ public class ChessBoardMain extends JFrame {
                     }
                 }
             }
+            /*
+            new Thread(){
+                public void run(){
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    if(moved==1){
+                        multgo();
+                        moved=0;
+                    }
+                }
+            }.start();
+
+             */
 
 
         }
@@ -603,6 +622,20 @@ public class ChessBoardMain extends JFrame {
         public void mouseReleased(MouseEvent e) {
             // TODO Auto-generated method stub
 
+        }
+    }
+
+    public static Integer moved=0;
+    public static void multgo(){
+        String seed = seedexport();
+        addlog("Test: "+seed);
+        try {
+            Thread.sleep(100);
+            astep();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        } catch (InterruptedException exc) {
+            throw new RuntimeException(exc);
         }
     }
     public void gameOverMsg(String msg){
@@ -754,7 +787,7 @@ public class ChessBoardMain extends JFrame {
                 startFen=JOptionPane.showInputDialog(null,"请输入种子:\n","种子导入",JOptionPane.PLAIN_MESSAGE);
                 initHandler();
             }else if("种子导出".equalsIgnoreCase(actionCommand)){
-                Tools.seedexp(chessParamCont.board,moveHistory);
+                seedexp(chessParamCont.board,moveHistory);
             }else if("菜鸟".equals(actionCommand)){
                 computerLevel=ComputerLevel.greenHand;
             }else if("入门".equals(actionCommand)){
@@ -882,19 +915,6 @@ public class ChessBoardMain extends JFrame {
             }
 
         }
-        new Thread(){
-            public void run(){
-                addlog("Test: "+seedexport());
-                try {
-                    astep(seedexport());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }.start();
-
     }
     public static String seedexport(){
         addlog(String.valueOf(Tools.seedexporttime(chessParamCont.board,moveHistory)));
@@ -1003,6 +1023,7 @@ public class ChessBoardMain extends JFrame {
             cmp.moveOperate(moveNode);
             transTable.synchroZobristBoardToStatic();
         }
+        System.out.println();
 
 
 

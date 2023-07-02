@@ -2,7 +2,9 @@ package com.pj.chess.zobrist;
 
 import static com.pj.chess.ChessConstant.*;
 import static com.pj.chess.ChessBoardMain.*;
+import static com.pj.chess.multiplayer.clienttoclient.astep;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +76,7 @@ public class TranspositionTable {
 				tranZobrist[1][i][OVERRIDESTEP].isExists=false;
 			}
 		}
+
 		
 	}
 

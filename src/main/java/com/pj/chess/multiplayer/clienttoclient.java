@@ -28,33 +28,49 @@ public class clienttoclient {
             //lastinfo-->走棋-->message
             String message = null;
             move("c6c5  rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR",rorb);
+            astep();
         }else if(rorb.equals("black")){
             String received = ListenerLaunch(mport);
             JOptionPane.showMessageDialog(null,"您是黑方，对局开始","联网",JOptionPane.PLAIN_MESSAGE);
             move(received,rorb);
+            astep();
         }else{
             JOptionPane.showMessageDialog(null,"错误:\nNo Such RorB message(01).","联网",JOptionPane.PLAIN_MESSAGE);
         }
     }
-    public static void astep(String seed) throws IOException, InterruptedException {
-        if (multiplayer==1){
-                    addlog("SeedExport: "+seedexport());
-
+    public static String received2=null;
+    public static void astep() throws IOException, InterruptedException {
+        new Thread(){
+            public void run(){
+                while (moved!=1){
                     try {
-                        ADialogue(theip, theport, seedexport());
-                    } catch (IOException e) {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-
-                    String received = null;
-                    try {
-                        received = ListenerLaunch(themport);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    move(received, therorb);
-        }
+                }
+                String seed = seedexport();
+                addlog("SeedExport: "+seed);
+                try {
+                    ADialogue(theip, theport, seed);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    received2 = ListenerLaunch(themport);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                move(received2, therorb);
+                try {
+                    astep();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.start();
     }
     public static String red(){
         Random random = new Random();
@@ -73,7 +89,6 @@ public class clienttoclient {
             com.pj.chess.ChessBoardMain.play=1-com.pj.chess.ChessBoardMain.play;
         }else {
             com.pj.chess.ChessBoardMain.play=1-com.pj.chess.ChessBoardMain.play;
-            System.out.println("play=0");
         }
     }
 
@@ -81,6 +96,9 @@ public class clienttoclient {
     public static void handshaking(){
         Integer mport = Integer.valueOf(JOptionPane.showInputDialog(null,"请设置您的监听端口:\n","联网",JOptionPane.PLAIN_MESSAGE));
         String ip = JOptionPane.showInputDialog(null,"请输入对方ip:\n","联网",JOptionPane.PLAIN_MESSAGE);
+        if(ip.equals("lh")){
+            ip = "127.0.0.1";
+        }
         Integer port = Integer.valueOf(JOptionPane.showInputDialog(null,"请输入对方的监听端口:\n","联网",JOptionPane.PLAIN_MESSAGE));
         theport = port;
         theip = ip;

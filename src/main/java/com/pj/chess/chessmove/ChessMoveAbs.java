@@ -1,6 +1,9 @@
 package com.pj.chess.chessmove;
 
+import static com.pj.chess.ChessBoardMain.seedexport;
 import static com.pj.chess.ChessConstant.*;
+import static com.pj.chess.LogWindow.addlog;
+import static com.pj.chess.multiplayer.clienttoclient.astep;
 
 import com.pj.chess.BitBoard;
 import com.pj.chess.ChessConstant;
@@ -8,6 +11,8 @@ import com.pj.chess.chessparam.ChessParam;
 import com.pj.chess.evaluate.EvaluateCompute;
 import com.pj.chess.movelist.MoveNodeList;
 import com.pj.chess.zobrist.TranspositionTable;
+
+import java.io.IOException;
 
 /**
  * @author Administrator
@@ -105,7 +110,7 @@ public abstract class ChessMoveAbs {
 		setChess(srcChess,destSite);
 		setChess(destChess,NOTHING);	
 			
-		
+
 		int srcRow = boardRow[srcSite];
 		int srcCol = boardCol[srcSite];
 		int destRow = boardRow[destSite];
@@ -125,6 +130,7 @@ public abstract class ChessMoveAbs {
 //		System.out.println("移动棋子前Zobrist："+TranspositionTable.boardZobrist);
 		tranTable.moveOperate(moveNode);
 //		System.out.println("移动棋子后Zobrist："+TranspositionTable.boardZobrist);
+
 		
 	}
 	/**撤销棋子移动改变棋盘和位棋盘
