@@ -16,6 +16,6 @@ public class VersionFile {
     public static String alphaUpdatemessage = "";
     public static String alphaBugFixmessage = "";
     public static String versionagreed = "";
-    public static boolean Debugmode = true;
+    public static boolean Debugmode = false;
 
 }
