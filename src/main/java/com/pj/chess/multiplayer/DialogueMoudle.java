@@ -11,9 +11,9 @@ public class DialogueMoudle {
 
     public static void ADialogue(String ip, Integer port,String message) throws IOException {
         addlog("Send: "+message);
-        Socket socket = new Socket(ip, port);
-        OutputStream aoutputstream = socket.getOutputStream();
-        aoutputstream.write(message.getBytes());
-        socket.close();
+        try (Socket socket = new Socket(ip, port); OutputStream aoutputstream = socket.getOutputStream()) {
+            aoutputstream.write(message.getBytes());
+            aoutputstream.flush();
+        }
     }
 }

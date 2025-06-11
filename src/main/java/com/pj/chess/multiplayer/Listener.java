@@ -10,13 +10,13 @@ import static com.pj.chess.LogWindow.addlog;
 
 public class Listener {
     public static String ListenerLaunch(Integer port) throws IOException {
-        ServerSocket server = new ServerSocket(port);
-        Socket socket = server.accept();
-        InputStream ainputstream = socket.getInputStream();
         byte[] bytes = new byte[1024];
-        int received = ainputstream.read(bytes);
-        socket.close();
-        server.close();
+        int received;
+        try (ServerSocket server = new ServerSocket(port);
+             Socket socket = server.accept();
+             InputStream ainputstream = socket.getInputStream()) {
+            received = ainputstream.read(bytes);
+        }
         addlog("Listened: "+new String(bytes, 0, received));
         return new String(bytes, 0, received);
     }

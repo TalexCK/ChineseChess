@@ -22,20 +22,19 @@ public class clienttoclient {
         doubles();
         multiplayer=1;
         therorb=rorb;
-        if(rorb.equals("red")){
+        if ("red".equals(rorb)) {
             com.pj.chess.ChessBoardMain.play=1-com.pj.chess.ChessBoardMain.play;
-            JOptionPane.showMessageDialog(null,"ÄúÊÇºì·½£¬¶Ô¾Ö¿ªÊ¼","ÁªÍø",JOptionPane.PLAIN_MESSAGE);
-            //lastinfo-->×ßÆå-->message
-            String message = null;
-            move("c6c5  rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR",rorb);
+            JOptionPane.showMessageDialog(null,"Red side start","",JOptionPane.PLAIN_MESSAGE);
+            ADialogue(ip, port, com.pj.chess.ChessBoardMain.startFen);
+            move(com.pj.chess.ChessBoardMain.startFen,rorb);
             astep();
-        }else if(rorb.equals("black")){
+        } else if ("black".equals(rorb)) {
             String received = ListenerLaunch(mport);
-            JOptionPane.showMessageDialog(null,"ÄúÊÇºÚ·½£¬¶Ô¾Ö¿ªÊ¼","ÁªÍø",JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null,"Black side start","",JOptionPane.PLAIN_MESSAGE);
             move(received,rorb);
             astep();
-        }else{
-            JOptionPane.showMessageDialog(null,"´íÎó:\nNo Such RorB message(01).","ÁªÍø",JOptionPane.PLAIN_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null,"No Such RorB message","",JOptionPane.PLAIN_MESSAGE);
         }
     }
     public static String received2=null;
@@ -94,12 +93,12 @@ public class clienttoclient {
 
 
     public static void handshaking(){
-        Integer mport = Integer.valueOf(JOptionPane.showInputDialog(null,"ÇëÉèÖÃÄúµÄ¼àÌı¶Ë¿Ú:\n","ÁªÍø",JOptionPane.PLAIN_MESSAGE));
-        String ip = JOptionPane.showInputDialog(null,"ÇëÊäÈë¶Ô·½ip:\n","ÁªÍø",JOptionPane.PLAIN_MESSAGE);
+        Integer mport = Integer.valueOf(JOptionPane.showInputDialog(null,"è¯·è®¾ç½®æ‚¨çš„ç›‘å¬ç«¯å£:\n","è”ç½‘",JOptionPane.PLAIN_MESSAGE));
+        String ip = JOptionPane.showInputDialog(null,"è¯·è¾“å…¥å¯¹æ–¹ip:\n","è”ç½‘",JOptionPane.PLAIN_MESSAGE);
         if(ip.equals("lh")){
             ip = "127.0.0.1";
         }
-        Integer port = Integer.valueOf(JOptionPane.showInputDialog(null,"ÇëÊäÈë¶Ô·½µÄ¼àÌı¶Ë¿Ú:\n","ÁªÍø",JOptionPane.PLAIN_MESSAGE));
+        Integer port = Integer.valueOf(JOptionPane.showInputDialog(null,"è¯·è¾“å…¥å¯¹æ–¹çš„ç›‘å¬ç«¯å£:\n","è”ç½‘",JOptionPane.PLAIN_MESSAGE));
         theport = port;
         theip = ip;
         themport = mport;
